@@ -14,13 +14,15 @@
 		</ul>
 	</nav>
 	<div>
-		<h1>Hãy hỏi cộng đồng một câu hỏi đúng/sai hoặc có/không</h1>
+		<h1 id="title">Hãy hỏi cộng đồng một câu hỏi đúng/sai hoặc có/không</h1>
 		<form action="/createquestion" method="POST">
-			<textarea name="questionContent" id="" cols="30" rows="10"></textarea>
-			<span>Còn 200/200 kí tự</span>
+			<textarea maxlength="200" id="questionContent" name="questionContent" cols="30" rows="10"></textarea>
+			<span>Còn <span id="remain">200</span>/200 kí tự</span>
 			<!-- <input type="submit" value="Gửi"> -->
 			<button type="submit">Gửi</button>
 		</form>
 	</div>
+
+	<script src="/main.js"></script>
 </body>
 </html>
