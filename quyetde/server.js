@@ -1,6 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const mongoose = require('mongoose');
+
+const QuestionModel = require('./models/questionModel');
+
+mongoose.connect("mongodb://localhost/quyetde", (err) => {
+	if(err) console.log(err)
+	else console.log("DB connect success!");
+});
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -18,23 +27,24 @@ app.get('/answer', (req, res) => {
 });
 
 app.post('/createquestion', (req, res) => {
-	let questionList = JSON.parse(fs.readFileSync('./questions.json'));
+	// const newQuestion = new QuestionModel({
+	// 	questionContent: req.body.questionContent
+	// });
 
-	const newQuestion = {
-		id: questionList.length,
-		questionContent: req.body.questionContent,
-		yes: 0,
-		no: 0
-	};
+	// newQuestion.save();
 
-	questionList.push(newQuestion);
+	// res.redirect('/answer');
 
-	fs.writeFileSync('./questions.json', JSON.stringify(questionList));
-
-	res.redirect('/answer');
+	QuestionModel.create(
+		{ questionContent: req.body.questionContent },
+		(err, questionCreated) => {
+			if(err) console.log(err)
+			else res.redirect('/question/'+questionCreated._id);
+		});
 });
 
 app.get('/randomquestion', (req, res) => {
+	// findOne
 	let questionList = JSON.parse(fs.readFileSync('./questions.json'));
 
 	if(questionList.length > 0) {
@@ -46,13 +56,38 @@ app.get('/randomquestion', (req, res) => {
 });
 
 app.post('/answer', (req, res) => {
+	//find...AndUpdate
+	//find -> save
 	const { questionid, answer } = req.body;
-	// const questionid = req.body.questionid;
-	// const answer = req.body.answer;
-	let questionList = JSON.parse(fs.readFileSync('./questions.json'));
-	questionList[questionid][answer] += 1;
-	fs.writeFileSync('./questions.json', JSON.stringify(questionList));
-	res.send({ success: 1 });
+
+	QuestionModel.findById(questionid)
+	QuestionModel.findOne({ "_id": questionid }, (err, questionFound) => {
+		if(err) console.log(err)
+		else if(!questionFound) console.log("Not Found")
+		else {
+			questionFound.yes += 1;//questionFound.no += 1;
+			questionFound.save((err, questionUpdated) => {
+				if(err) console.log(err)
+				else {
+
+				}
+			});
+		}
+	})
+
+	QuestionModel.findOneAndUpdate(
+		{ "_id": questionid },
+		{ $inc: { yes: 1 } },
+		{ new: true }
+		(err, questionUpdated) => {
+		questionUpdated;
+	});
+	// // const questionid = req.body.questionid;
+	// // const answer = req.body.answer;
+	// let questionList = JSON.parse(fs.readFileSync('./questions.json'));
+	// questionList[questionid][answer] += 1;
+	// fs.writeFileSync('./questions.json', JSON.stringify(questionList));
+	// res.send({ success: 1 });
 });
 
 app.get('/question/:questionId', (req, res) => {
