@@ -8,15 +8,17 @@
 // 	console.log(error);
 // });
 
+const hostname = "http://localhost:3001";
+
 function getRandomQuestion() {
 	$.ajax({
-		url: "http://localhost:3000/randomquestion",
+		url: hostname+"/randomquestion",
 		type: "GET",
 		success: function(response) {
 			if(response) {
 				$("#questionContent").text(response.questionContent);
-				$(".answer_btn").data("questionid", response.id);
-				$("#viewDetail").attr("href", "/question/"+response.id);
+				$(".answer_btn").data("questionid", response._id);
+				$("#viewDetail").attr("href", "/question/"+response._id);
 			}
 		},
 		error: function(err) {
@@ -34,7 +36,7 @@ $("#otherQuestion").on("click", function() {
 $(".answer_btn").on("click", function() {
 	let questionId = $(this).data("questionid");
 	$.ajax({
-		url: "http://localhost:3000/answer",
+		url: "http://localhost:3001/answer",
 		type: "POST",
 		data: $(this).data(),
 		success: function(response) {
