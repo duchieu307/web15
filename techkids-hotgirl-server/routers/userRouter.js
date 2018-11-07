@@ -12,10 +12,12 @@ UserRouter.use((req, res, next) => {
 // "/api/users" => get all
 UserRouter.get("/", (req, res) => {
 	console.log("Get all user");
-	UserModel.find({}, "name email avatar intro posts", (err, users) => {
-		if(err) res.status(500).json({ success: 0, error: err })
-		else res.json({ success: 1, users });
-	});
+	UserModel.find({}, "name email avatar intro posts")
+		.populate("posts")
+		.exec((err, users) => {
+			if(err) res.status(500).json({ success: 0, error: err })
+			else res.json({ success: 1, users });
+		});
 });
 
 // get user by id

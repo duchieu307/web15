@@ -6,10 +6,12 @@ const ImageModel = require('../models/imageModel');
 // "/api/images" => get all
 ImageRouter.get("/", (req, res) => {
 	console.log("Get all image");
-	ImageModel.find({}, (err, images) => {
-		if(err) res.status(500).json({ success: 0, error: err })
-		else res.json({ success: 1, images });
-	});
+	ImageModel.find({})
+		.populate("user", "name avatar")
+		.exec((err, images) => {
+			if(err) res.status(500).json({ success: 0, error: err })
+			else res.json({ success: 1, images });
+		});
 });
 
 // get user by id
