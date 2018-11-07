@@ -10,14 +10,23 @@ UserRouter.use((req, res, next) => {
 });
 
 // "/api/users" => get all
-UserRouter.get("/", (req, res) => {
+UserRouter.get("/", async (req, res) => {
 	console.log("Get all user");
-	UserModel.find({}, "name email avatar intro posts")
-		.populate("posts")
-		.exec((err, users) => {
-			if(err) res.status(500).json({ success: 0, error: err })
-			else res.json({ success: 1, users });
-		});
+	try {
+		const users = await UserModel.find({}, "name email avatar intro posts")
+									.populate("posts");
+		res.json({ success: 1, users });
+	} catch (error) {
+		res.status(500).json({ success: 0, error: error })
+	}
+	// UserModel.find({}, "name email avatar intro posts")
+	// 	.populate("posts")
+	// 	.then(users => res.json({ success: 1, users }))
+	// 	.catch(err => res.status(500).json({ success: 0, error: err }))
+		// .exec((err, users) => {
+		// 	if(err) res.status(500).json({ success: 0, error: err })
+		// 	else res.json({ success: 1, users });
+		// });
 });
 
 // get user by id
@@ -41,7 +50,7 @@ UserRouter.post("/", (req, res) => {
 });
 
 // Edit user
-UserRouter.put("/:id", (req, res) => {
+UserRouter.put("/:id", async (req, res) => {
 
 	// UserModel.findByIdAndUpdate(userId, { name, password, avatar, intro }, { new: true }, (err, userUpdated) => {
 	// 	if(err) res.status(500).json({ success: 0, message: err })
@@ -50,20 +59,49 @@ UserRouter.put("/:id", (req, res) => {
 	const userId = req.params.id;
 	const { name, password, avatar, intro, posts } = req.body;
 
-	UserModel.findById(userId, (err, userFound) => {
-		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
-		else {
+	// UserModel.findById(userId, (err, userFound) => {
+	// 	if(err) res.status(500).json({ success: 0, message: err })
+	// 	else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
+	// 	else {
+	// 		for(key in { name, password, avatar, intro, posts }) {
+	// 			if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
+	// 		}
+
+	// 		userFound.save((err, userUpdated) => {
+	// 			if(err) res.status(500).json({ success: 0, message: err })
+	// 			else res.json({ success: 1, user: userUpdated });
+	// 		});
+	// 	};
+	// });
+
+	// UserModel.findById(userId)
+	// 	.then(userFound => {
+	// 		if(!userFound) {
+	// 			res.status(404).json({ success: 0, message: "Not found!" });
+	// 		} else {
+	// 			for(key in { name, password, avatar, intro, posts }) {
+	// 				if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
+	// 			}
+	// 			return userFound.save();
+	// 		}
+	// 	})
+	// 	.then(userUpdated => res.json({ success: 1, user: userUpdated }))
+	// 	.catch(err => res.status(500).json({ success: 0, message: err }));
+
+	try {
+		const userFound = await UserModel.findById(userId);
+		if(!userFound) {
+			res.status(404).json({ success: 0, message: "Not found!" });
+		} else {
 			for(key in { name, password, avatar, intro, posts }) {
 				if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
 			}
-
-			userFound.save((err, userUpdated) => {
-				if(err) res.status(500).json({ success: 0, message: err })
-				else res.json({ success: 1, user: userUpdated });
-			});
-		};
-	});
+			let userUpdated = await userFound.save();
+			res.json({ success: 1, user: userUpdated });
+		}
+	} catch (error) {
+		res.status(500).json({ success: 0, message: error })
+	}
 });
 
 // Delete user => BTVN
