@@ -12,7 +12,7 @@ UserRouter.use((req, res, next) => {
 // "/api/users" => get all
 UserRouter.get("/", (req, res) => {
 	console.log("Get all user");
-	UserModel.find({}, "name email avatar intro", (err, users) => {
+	UserModel.find({}, "name email avatar intro posts", (err, users) => {
 		if(err) res.status(500).json({ success: 0, error: err })
 		else res.json({ success: 1, users });
 	});
@@ -23,7 +23,7 @@ UserRouter.get("/:id", (req, res) => {
 	let userId = req.params.id;
 	UserModel.findById(userId, (err, userFound) => {
 		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!userFound._id) res.status(404).json({ success: 0, message: "Not found!" })
+		else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
 		else res.json({ success: 1, user: userFound });
 	});
 });
@@ -46,13 +46,13 @@ UserRouter.put("/:id", (req, res) => {
 	// 	else res.json({ success: 1, user: userUpdated });
 	// });
 	const userId = req.params.id;
-	const { name, password, avatar, intro } = req.body;
+	const { name, password, avatar, intro, posts } = req.body;
 
 	UserModel.findById(userId, (err, userFound) => {
 		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!userFound._id) res.status(404).json({ success: 0, message: "Not found!" })
+		else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
 		else {
-			for(key in { name, password, avatar, intro }) {
+			for(key in { name, password, avatar, intro, posts }) {
 				if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
 			}
 

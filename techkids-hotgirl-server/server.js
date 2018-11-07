@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost/techkids-hotgirl")
 
 const userRouter = require('./routers/userRouter');
+const imageRouter = require('./routers/imageRouter');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,8 +14,9 @@ app.use(bodyParser.json());
 app.get("/api", (req, res) => {
 	res.send("Api router");
 });
-
+//api/images
 app.use("/api/users", userRouter);
+app.use("/api/images", imageRouter);
 
 // Middleware
 app.use((req, res, next) => {

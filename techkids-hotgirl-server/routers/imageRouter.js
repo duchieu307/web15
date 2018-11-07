@@ -17,7 +17,7 @@ ImageRouter.get("/:id", (req, res) => {
 	let imageId = req.params.id;
 	ImageModel.findById(imageId, (err, imageFound) => {
 		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!imageFound._id) res.status(404).json({ success: 0, message: "Not found!" })
+		else if(!imageFound) res.status(404).json({ success: 0, message: "Not found!" })
 		else res.json({ success: 1, user: imageFound });
 	});
 });
@@ -39,7 +39,7 @@ ImageRouter.put("/:id", (req, res) => {
 
 	ImageModel.findById(imageId, (err, imageFound) => {
 		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!imageFound._id) res.status(404).json({ success: 0, message: "Not found!" })
+		else if(!imageFound) res.status(404).json({ success: 0, message: "Not found!" })
 		else {
 			for(key in { url, caption, title }) {
 				if(imageFound[key] && req.body[key]) imageFound[key] = req.body[key];
