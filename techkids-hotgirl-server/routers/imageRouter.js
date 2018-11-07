@@ -25,8 +25,8 @@ ImageRouter.get("/:id", (req, res) => {
 // Create user
 ImageRouter.post("/", (req, res) => {
 	console.log(req.body)
-	const { user, view, like, url, caption, title, comments } = req.body;
-	ImageModel.create({ user, view, like, url, caption, title, comments }, (err, imageCreated) => {
+	const { user, url, caption, title } = req.body;
+	ImageModel.create({ user, url, caption, title }, (err, imageCreated) => {
 		if(err) res.status(500).json({ success: 0, message: err })
 		else res.status(201).json({ success: 1, user: imageCreated });
 	});
