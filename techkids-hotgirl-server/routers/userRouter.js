@@ -1,5 +1,6 @@
 const express = require('express');
 const UserRouter = express.Router();
+const bcrypt = require('bcrypt-nodejs');
 
 const UserModel = require('../models/userModel');
 
@@ -13,7 +14,7 @@ UserRouter.use((req, res, next) => {
 UserRouter.get("/", async (req, res) => {
 	console.log("Get all user");
 	try {
-		const users = await UserModel.find({}, "name email avatar intro posts")
+		const users = await UserModel.find({}, "name email avatar intro posts hashPassword")
 									.populate("posts");
 		res.json({ success: 1, users });
 	} catch (error) {
@@ -41,9 +42,9 @@ UserRouter.get("/:id", (req, res) => {
 
 // Create user
 UserRouter.post("/", (req, res) => {
-	console.log(req.body)
 	const { name, email, password, avatar, intro } = req.body;
-	UserModel.create({ name, email, password, avatar, intro }, (err, userCreated) => {
+	const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+	UserModel.create({ name, email, hashPassword, avatar, intro }, (err, userCreated) => {
 		if(err) res.status(500).json({ success: 0, message: err })
 		else res.status(201).json({ success: 1, user: userCreated });
 	});
@@ -94,7 +95,13 @@ UserRouter.put("/:id", async (req, res) => {
 			res.status(404).json({ success: 0, message: "Not found!" });
 		} else {
 			for(key in { name, password, avatar, intro, posts }) {
-				if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
+				if(userFound["hashPassword"] && req.body["password"]) {
+					const plainPasswordNew = req.body["password"];
+					const hashPasswordOld = userFound["hashPassword"];
+					if(!bcrypt.compareSync(plainPasswordNew, hashPasswordOld)) {
+						userFound["hashPassword"] = bcrypt.hashSync(plainPasswordNew, bcrypt.genSaltSync());
+					}
+				} else if(userFound[key] && req.body[key]) userFound[key] = req.body[key];
 			}
 			let userUpdated = await userFound.save();
 			res.json({ success: 1, user: userUpdated });

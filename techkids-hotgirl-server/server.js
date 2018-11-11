@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt-nodejs');
 
 mongoose.connect("mongodb://localhost/techkids-hotgirl")
 
@@ -12,6 +13,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/api", (req, res) => {
+	// const plainTextPassword = "123456789";
+	// const salt = bcrypt.genSaltSync(12);
+	// const hashPassword = bcrypt.hashSync(plainTextPassword, salt);
+	// console.log("Hash: " + hashPassword, "Salt: " + salt);
+	// console.log(bcrypt.compareSync(plainTextPassword, hashPassword));
+	// console.log(bcrypt.compareSync("abcdef", hashPassword));
 	res.send("Api router");
 });
 //api/images
