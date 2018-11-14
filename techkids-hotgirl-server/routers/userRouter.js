@@ -10,8 +10,23 @@ UserRouter.use((req, res, next) => {
 	next();
 });
 
+// get user by id
+UserRouter.get("/:id", (req, res) => {
+	let userId = req.params.id;
+	UserModel.findById(userId, (err, userFound) => {
+		if(err) res.status(500).json({ success: 0, message: err })
+		else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
+		else res.json({ success: 1, user: userFound });
+	});
+});
+
 // "/api/users" => get all
-UserRouter.get("/", async (req, res) => {
+UserRouter.get("/", (req, res, next) => {
+	const { userInfo } = req.session;
+	if (userInfo && userInfo.name == "Huy") {
+		next();
+	} else res.status(401).json({ success: 0, message: "Permission denied!" });
+} ,async (req, res) => {
 	console.log("Get all user");
 	try {
 		const users = await UserModel.find({}, "name email avatar intro posts hashPassword")
@@ -30,14 +45,11 @@ UserRouter.get("/", async (req, res) => {
 		// });
 });
 
-// get user by id
-UserRouter.get("/:id", (req, res) => {
-	let userId = req.params.id;
-	UserModel.findById(userId, (err, userFound) => {
-		if(err) res.status(500).json({ success: 0, message: err })
-		else if(!userFound) res.status(404).json({ success: 0, message: "Not found!" })
-		else res.json({ success: 1, user: userFound });
-	});
+UserRouter.use((req, res, next) => {
+	const { userInfo } = req.session;
+	if (userInfo && userInfo.role >= 1) {
+		next();
+	} else res.status(401).json({ success: 0, message: "Permission denied!" });
 });
 
 // Create user

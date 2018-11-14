@@ -17,14 +17,22 @@ AuthRouter.post("/login", async (req, res) => {
 				req.session.userInfo = {
 					id: userFound._id,
 					name: userFound.name,
-					email: userFound.email
+					email: userFound.email,
+					role: 0
 				}
+				// admin: 1, user: 0
 				res.json({ success: 1, message: "Login successful"});
 			}
 		}
 	} catch (error) {
 		res.status(500).json({ success: 0, error })
 	}
+});
+
+AuthRouter.delete("/logout", (req, res) => {
+	req.session.userInfo = undefined;
+	req.session.destroy();
+	res.json({ success: 1, message: "Logout successful" });
 });
 
 module.exports = AuthRouter;

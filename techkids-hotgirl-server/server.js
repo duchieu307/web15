@@ -33,7 +33,7 @@ app.get("/api", (req, res) => {
 	// console.log(bcrypt.compareSync(plainTextPassword, hashPassword));
 	// console.log(bcrypt.compareSync("abcdef", hashPassword));
 	// req.session.username = "huynhtuanhuy";
-	console.log(req.session);
+	console.log(req.session.userInfo);
 	console.log(req.sessionID);
 	res.send("Api router");
 });
