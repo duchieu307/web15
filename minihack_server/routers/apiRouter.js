@@ -3,6 +3,17 @@ const Router = express.Router();
 
 const GameModel = require('../models/game.model');
 
+Router.get('/game', (req, res) => {
+    try {
+        GameModel.find({}, (err, games) => {
+            if(err) res.status(500).json({ success: 0, err: err })
+            else res.json({ success: 1, games: games });
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 Router.get('/game/:id', (req, res) => {
     try {
         let gameId = req.params.id;

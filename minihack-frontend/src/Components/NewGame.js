@@ -17,9 +17,12 @@ export default class NewGame extends Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
-	handleSubmit(event) {
+	handleSubmit = (event) => {
 		event.preventDefault();
-		console.log(this.state);
+
+		const { toggleLoading } = this.props;
+		toggleLoading(true);
+		
 		const newGame = {
 			// ["player1", "player2", "player3", "player4"]
 			players: Object.keys(this.state).map(key => this.state[key]),
@@ -31,8 +34,14 @@ export default class NewGame extends Component {
 			method: "POST",
 			data: newGame
 		}).then(response => {
-			console.log(response.data)
-		}).catch(error => console.log(error));
+			if(response.data.success) {
+				window.location.href = `/game/${response.data.game._id}`
+			}
+			// toggleLoading(false);
+		}).catch(error => {
+			toggleLoading(false);
+			console.log(error)
+		});
 	}
 
 	handleInputChange(event) {
