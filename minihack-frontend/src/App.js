@@ -56,13 +56,9 @@ class App extends Component {
     return (
       <Container className="App">
         <Header />
-        { loading ? (
-          <div className="text-center">
-            <Loading />
-          </div> ) : ( game ?
-            <PlayGame /> :
-            <NewGame toggleLoading={(loading) => { this.setState({loading}) }} />
-          )
+        { loading ? <div className="text-center"><Loading /></div>
+          : game ? <PlayGame />
+                : <NewGame toggleLoading={(loading) => { this.setState({loading}) }} />
         }
         {/* <header className="App-header">
           {this.state.showImg ? <img src={logo} className="App-logo" alt="logo" /> : "Hidden"}
