@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Form, FormGroup, Input, Button } from 'reactstrap';
 import axios from 'axios';
 
+import { ROOT_API } from '../statics';
+
 export default class NewGame extends Component {
 	constructor(props) {
 		super(props);
@@ -30,7 +32,7 @@ export default class NewGame extends Component {
 		}
 		// yarn add
 		axios({
-			url: "http://10.10.3.188:6969/api/game",
+			url: `${ROOT_API}/api/game`,
 			method: "POST",
 			data: newGame
 		}).then(response => {

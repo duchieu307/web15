@@ -9,6 +9,7 @@ import Loading from "./Components/Loading";
 import NewGame from "./Components/NewGame";
 import Header from "./Components/Header";
 import PlayGame from './Components/PlayGame';
+import { ROOT_API } from './statics';
 import './App.css';
 
 class App extends Component {
@@ -31,7 +32,7 @@ class App extends Component {
         const questionId = pathParams[1];
 
         axios({
-          url: `http://10.10.3.188:6969/api/game/${questionId}`,
+          url: `${ROOT_API}/api/game/${questionId}`,
           method: "GET"
         }).then(response => {
           console.log(response.data);
@@ -57,8 +58,8 @@ class App extends Component {
       <Container className="App">
         <Header />
         { loading ? <div className="text-center"><Loading /></div>
-          : game ? <PlayGame />
-                : <NewGame toggleLoading={(loading) => { this.setState({loading}) }} />
+          : game ? <PlayGame game={game} />
+                : <NewGame toggleLoading={(loading) => { this.setState({loading: loading}) }} />
         }
         {/* <header className="App-header">
           {this.state.showImg ? <img src={logo} className="App-logo" alt="logo" /> : "Hidden"}
