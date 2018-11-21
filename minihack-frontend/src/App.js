@@ -51,14 +51,40 @@ class App extends Component {
     }
   }
 
+  addNewRow = () => {
+    const { game } = this.state;
+    game.scores = game.scores.map(score => [...score, 0]);
+    this.setState({ loading: true });
+
+    axios({
+      method: "PUT",
+      url: `${ROOT_API}/api/game`,
+      data: {
+        gameId: game._id,
+        scores: game.scores
+      }
+    }).then(response => {
+      console.log(response);
+      this.setState({ loading: false, game });
+    }).catch(err => {
+      console.log(err);
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
     const { game, loading } = this.state;
+    // let gameDummy;
+    // if(game) {
+    //   const { players, scores } = game;
+    //   gameDummy = { players, scores: scores.map(score => [...score, 0, 0, 0]) }
+    // }
 
     return (
       <Container className="App">
         <Header />
         { loading ? <div className="text-center"><Loading /></div>
-          : game ? <PlayGame game={game} />
+          : game ? <PlayGame game={game} addNewRow={this.addNewRow} />
                 : <NewGame toggleLoading={(loading) => { this.setState({loading: loading}) }} />
         }
         {/* <header className="App-header">
